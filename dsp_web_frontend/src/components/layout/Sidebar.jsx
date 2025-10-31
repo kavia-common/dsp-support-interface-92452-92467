@@ -36,11 +36,19 @@ export default function Sidebar({ collapsed, onToggle }) {
       <nav style={{ display: 'grid', gap: 6 }}>
         <NavLink to="/" end className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <span>🏠</span>
-          {!collapsed && <span>Home</span>}
+          {!collapsed && <span>Dashboard</span>}
         </NavLink>
-        <NavLink to="/workspace" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span>🧩</span>
-          {!collapsed && <span>Workspace</span>}
+        <NavLink to="/tickets" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <span>🎫</span>
+          {!collapsed && <span>Tickets</span>}
+        </NavLink>
+        <NavLink to="/conversations" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <span>💬</span>
+          {!collapsed && <span>Conversations</span>}
+        </NavLink>
+        <NavLink to="/playbooks" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <span>📘</span>
+          {!collapsed && <span>Playbooks</span>}
         </NavLink>
         <NavLink to="/settings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <span>⚙️</span>
