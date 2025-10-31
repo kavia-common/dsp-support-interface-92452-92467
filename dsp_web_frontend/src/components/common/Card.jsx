@@ -67,10 +67,6 @@ export default function Card({
     </section>
   );
 }
-```
-
-Explanation: Create Loader component for inline/spinner and fullscreen modes with ARIA attributes
-````write file="/home/kavia/workspace/code-generation/dsp-support-interface-92452-92467/dsp_web_frontend/src/components/common/Loader.jsx"
 import React from 'react';
 
 /**
