@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Button, Card, ErrorBanner, Loader } from '../components/common';
+import { getTicket } from '../api/dspApi';
 
 /**
  * PUBLIC_INTERFACE
- * TicketDetail: Detail view for a ticket id with placeholder data.
+ * TicketDetail: Detail view for a ticket id loaded via API layer (with mock fallback).
  */
 export default function TicketDetail() {
   const { id } = useParams();
@@ -13,22 +14,21 @@ export default function TicketDetail() {
   const [ticket, setTicket] = useState(null);
 
   useEffect(() => {
-    const t = setTimeout(() => {
+    let cancelled = false;
+    async function load() {
+      setLoading(true);
+      setErr('');
       try {
-        // Placeholder ticket
-        setTicket({
-          id,
-          title: 'Sample ticket',
-          status: 'Open',
-          description: 'Customer reports an issue with the system. This is placeholder content.',
-        });
+        const data = await getTicket(id);
+        if (!cancelled) setTicket(data || null);
       } catch (e) {
-        setErr('Failed to fetch ticket.');
+        if (!cancelled) setErr(e?.message || 'Failed to fetch ticket.');
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
-    }, 500);
-    return () => clearTimeout(t);
+    }
+    if (id) load();
+    return () => { cancelled = true; };
   }, [id]);
 
   if (loading) return <Loader label="Loading ticket..." />;

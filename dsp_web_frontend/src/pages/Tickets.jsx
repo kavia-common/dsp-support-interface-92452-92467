@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Card, EmptyState, ErrorBanner, Loader } from '../components/common';
+import { getTickets } from '../api/dspApi';
 
 /**
  * PUBLIC_INTERFACE
- * Tickets: List of tickets with placeholder loading and error handling.
+ * Tickets: List of tickets fetched via API layer (with mock fallback).
  */
 export default function Tickets() {
   const [loading, setLoading] = useState(true);
@@ -12,20 +13,21 @@ export default function Tickets() {
   const [tickets, setTickets] = useState([]);
 
   useEffect(() => {
-    const t = setTimeout(() => {
+    let cancelled = false;
+    async function load() {
+      setLoading(true);
+      setErr('');
       try {
-        // Placeholder data
-        setTickets([
-          { id: 'TCK-101', title: 'Login issues for user A', status: 'Open' },
-          { id: 'TCK-102', title: 'Payment failure on checkout', status: 'Investigating' },
-        ]);
+        const data = await getTickets();
+        if (!cancelled) setTickets(Array.isArray(data) ? data : []);
       } catch (e) {
-        setErr('Failed to fetch tickets.');
+        if (!cancelled) setErr(e?.message || 'Failed to fetch tickets.');
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
-    }, 600);
-    return () => clearTimeout(t);
+    }
+    load();
+    return () => { cancelled = true; };
   }, []);
 
   if (loading) {

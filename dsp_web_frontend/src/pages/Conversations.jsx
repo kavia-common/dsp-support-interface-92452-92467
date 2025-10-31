@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Card, EmptyState, ErrorBanner, Loader } from '../components/common';
+import { getConversations } from '../api/dspApi';
 
 /**
  * PUBLIC_INTERFACE
- * Conversations: Placeholder list of active conversations.
+ * Conversations: List of active conversations fetched via API layer (with mock fallback).
  */
 export default function Conversations() {
   const [loading, setLoading] = useState(true);
@@ -11,18 +12,21 @@ export default function Conversations() {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    const t = setTimeout(() => {
+    let cancelled = false;
+    async function load() {
+      setLoading(true);
+      setErr('');
       try {
-        setItems([
-          { id: 'C-1', subject: 'Follow-up on ticket TCK-101', participants: 3 },
-        ]);
+        const data = await getConversations();
+        if (!cancelled) setItems(Array.isArray(data) ? data : []);
       } catch (e) {
-        setErr('Failed to load conversations.');
+        if (!cancelled) setErr(e?.message || 'Failed to load conversations.');
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
-    }, 500);
-    return () => clearTimeout(t);
+    }
+    load();
+    return () => { cancelled = true; };
   }, []);
 
   if (loading) return <Loader label="Loading conversations..." />;
